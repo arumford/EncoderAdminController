@@ -1,0 +1,113 @@
+<!DOCTYPE html ng-app="ccbdManageApp">
+    <!--[if lt IE 7]><html lang="en" ng-app="ccbdManageApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+    <!--[if IE 7]><html lang="en" ng-app="ccbdManageApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+    <!--[if IE 8]><html lang="en" ng-app="ccbdManageApp" class="no-js lt-ie9"> <![endif]-->
+    <!--[if gt IE 8]><!--> <html lang="en" ng-app="ccbdManageApp" class="no-js"> <!--<![endif]-->
+    <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>CCBD Cake Manager</title>
+      <meta name="description" content="">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="bootstrap.min.css">
+      <link rel="stylesheet" href="bootstrap-grid.min.css">
+      <link rel="stylesheet" href="bootstrap-reboot.min.css">
+      <link rel="stylesheet" href="app.css">
+    </head>
+    <body ng-controller="MainController as encoders">
+      <div class="container-fluid">
+        <div class="row">
+          <h1 class="h1 col-lg-4 float-left">CCBD Encoder Administration</h1>
+        </div>
+        <div class="row col search-bar encoder">
+          <label for="search_text" class="text-light font-weight-bold filter">Search: </label>
+          <input id="search_text" type="text" ng-model="encoders.search_text.name"/>
+          <a href="#">
+              <span class="text-light filters" ng-click="encoders.toggle_filters()">Filter</span>
+          </a>
+          <div class="font-weight-bold text-light encoder filters" ng-show="encoders.showfilters">
+              <label class="filter">
+                  Status Buttons:
+                  <input type="checkbox" ng-model="encoders.filters.status_buttons"/>
+              </label>
+              <label class="filter">
+                  Audio Level:
+                  <input type="checkbox" ng-model="encoders.filters.audio_level"/>
+              </label>
+              <label class="filter">
+                  Stream Links:
+                  <input type="checkbox" ng-model="encoders.filters.stream_link"/>
+              </label>
+              <label class="filter">
+                  Network Information:
+                  <input type="checkbox" ng-model="encoders.filters.network_info"/>
+              </label>
+              <label class="filter">
+                  Update Status:
+                  <input type="checkbox" ng-model="encoders.filter.update_status"/>
+              </label>
+          </div>
+        </div>
+        <div class="col border encoder row" ng-repeat="encoder in encoders.encoders | filter: encoders.search_text"  ng-class="{'disabled-item': encoder.error}">
+            <div class="col-lg-2">
+            <div>
+                <span class="h4">{{encoder.name}}</span>
+            <!--                  <a href="https://{{encoder.url}}" target="_blank">-->
+            <!--                      <span class="badge badge-secondary">Edit</span>-->
+            <!--                  </a>-->
+                <button class="badge badge-secondary" ng-click="encoders.openLink(encoder.url)" ng-disabled="encoder.error">Edit</button>
+            </div>
+            </div>
+            <div ng-show="encoders.filters.status_buttons" class="col-lg-2">
+              <button ng-show="encoder.data.primary_status" class="btn btn-success" ng-click='encoders.update_status(encoder, "stop", "pri")' ng-disabled="encoder.error">Primary</button>
+              <button ng-hide="encoder.data.primary_status" class="btn btn-danger" ng-click='encoders.update_status(encoder, "start", "pri")' ng-disabled="encoder.error">Primary</button>
+              <button ng-show="encoder.data.backup_status" class="btn btn-success" ng-click='encoders.update_status(encoder, "stop", "bak")' ng-disabled="encoder.error">Backup</button>
+              <button ng-hide="encoder.data.backup_status" class="btn btn-danger" ng-click='encoders.update_status(encoder, "start", "bak")' ng-disabled="encoder.error">Backup</button>
+            </div>
+            <div class="col-lg-3" ng-show="encoders.filters.audio_level">
+            <label for="volumeControl"><span class="font-weight-bold">Audio:</span> {{encoder.data.input}}</label>
+            <input id="volumeControl" ng-model="encoder.data.input" type="range" class="form-control-range" ng-disabled="encoder.error"
+                   ng-mouseup="encoders.updateAudio(encoder, encoder.data.input)">
+            </div>
+            <div class="col-lg-6" ng-show="encoders.filters.stream_link">
+            <label>
+              <strong>Primary:</strong> {{encoder.data.primaryurl}}
+            </label>
+            <label>
+              <strong>Secondary:</strong> {{encoder.data.backupurl}}
+            </label>
+            </div>
+            <div class="col-lg-4" ng-show="encoders.filters.network_info">
+            <label class="filter">
+              <span class="font-weight-bold">IP Address:</span> {{encoder.data.ipaddress}}
+            </label>
+            <label class="filter">
+              <span class="font-weight-bold">Subnet Mask:</span> {{encoder.data.subnetmask}}
+            </label>
+            <label class="filter">
+              <span class="font-weight-bold">Default Gateway:</span> {{encoder.data.defaultgateway}}
+            </label>
+            <label class="filter">
+              <span class="font-weight-bold">DNS 1:</span> {{encoder.data.dns1}}
+            </label>
+            <label class="filter">
+              <span class="font-weight-bold">DNS 2:</span> {{encoder.data.dns2}}
+            </label>
+            <label class="filter">
+              <span class="font-weight-bold">MAC Address:</span> {{encoder.data.mac}}
+            </label>
+            </div>
+            <div class="col-lg-2" ng-show="encoders.filter.update_status">
+            <label class="filter">
+              <span class="font-weight-bold">Update Status: </span> {{encoder.data.update ? "Ready for Update" : "Up to Date"}}
+            </label>
+            </div>
+        </div>
+      </div>
+      <script src="jquery-3.3.1.min.js"></script>
+      <script src="angular.min.js"></script>
+      <script src="bootstrap.bundle.min.js"></script>
+      <script src="app.js"></script>
+      <script src="dataService.js"></script>
+    </body>
+</html>
